@@ -18,6 +18,8 @@ class _TestLayoutState extends State<TestLayout> {
     (_) => [Colors.white, Colors.black, ""],
   );
   int cursorCuadricula = 0;
+  int inicioFila = 0;
+
   List<dynamic> teclas = [
     [Colors.grey.shade300, Colors.black, "Q"],
     [Colors.grey.shade300, Colors.black, "W"],
@@ -50,7 +52,8 @@ class _TestLayoutState extends State<TestLayout> {
     [Colors.grey.shade300, Colors.black, "<-"],
   ];
 
-  String winner = "";
+  Widget winner = Text("");
+  bool finPartida = false;
 
   String palabra = "PASTO";
 
@@ -104,7 +107,7 @@ class _TestLayoutState extends State<TestLayout> {
               ),
             ),
 
-            Center(child: Text(winner, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green))),
+            Center(child: winner),
 
             Expanded(
               child: Column(
@@ -139,6 +142,8 @@ class _TestLayoutState extends State<TestLayout> {
   }
 
   Row _recorrerLista(int indice) {
+    List<int> finFila = [4, 9, 14, 19, 24, 29];
+
     Row fila = Row();
 
     if (teclas.indexOf(teclas[indice]) == 20) {
@@ -156,56 +161,64 @@ class _TestLayoutState extends State<TestLayout> {
                   child: ElevatedButton(
                     onPressed: () {
                       setState(() {
-                        List<int> finFila = [4, 9, 14, 19, 24, 29];
-                        int indiceLetra = 0;
-                        String palabraImpresa = "";
+                        if (!finPartida) {
+                          int indiceLetra = 0;
+                          String palabraImpresa = "";
 
-                        if (finFila.any((p) => cursorCuadricula == p)) {
-                          for (
+                          if (finFila.any((p) => cursorCuadricula == p)) {
+                            for (
                             int i = cursorCuadricula - 4;
                             i <= cursorCuadricula;
                             i++
-                          ) {
-                            String letra = cuadricula[i][2];
-                            palabraImpresa = palabraImpresa + letra;
-                            int indiceTecla = teclas.indexWhere(
-                              (tecla) => tecla[2] == letra,
-                            );
+                            ) {
+                              String letra = cuadricula[i][2];
+                              palabraImpresa = palabraImpresa + letra;
+                              int indiceTecla = teclas.indexWhere(
+                                    (tecla) => tecla[2] == letra,
+                              );
 
-                            if (palabra.contains(letra)) {
-                              if (palabra.indexOf(letra) == indiceLetra) {
-                                cuadricula[i][0] = Colors.green;
-                                cuadricula[i][1] = Colors.white;
+                              if (palabra.contains(letra)) {
+                                if (palabra.indexOf(letra) == indiceLetra) {
+                                  cuadricula[i][0] = Colors.green;
+                                  cuadricula[i][1] = Colors.white;
 
-                                teclas[indiceTecla][0] = Colors.green;
-                                teclas[indiceTecla][1] = Colors.white;
+                                  teclas[indiceTecla][0] = Colors.green;
+                                  teclas[indiceTecla][1] = Colors.white;
+                                } else {
+                                  cuadricula[i][0] = Colors.yellow;
+                                  cuadricula[i][1] = Colors.white;
 
+                                  if (teclas[indiceTecla][0] != Colors.green) {
+                                    teclas[indiceTecla][0] = Colors.yellow;
+                                    teclas[indiceTecla][1] = Colors.white;
+                                  }
+                                }
                               } else {
-                                cuadricula[i][0] = Colors.yellow;
+                                cuadricula[i][0] = Colors.grey[700];
                                 cuadricula[i][1] = Colors.white;
 
-                                if (teclas[indiceTecla][0] != Colors.green) {
-                                  teclas[indiceTecla][0] = Colors.yellow;
+                                if (teclas[indiceTecla][0] != Colors.green &&
+                                    teclas[indiceTecla][0] != Colors.yellow) {
+                                  teclas[indiceTecla][0] = Colors.grey[700];
                                   teclas[indiceTecla][1] = Colors.white;
                                 }
                               }
-                            } else {
-                              cuadricula[i][0] = Colors.grey[700];
-                              cuadricula[i][1] = Colors.white;
 
-                              if (teclas[indiceTecla][0] != Colors.green &&
-                                  teclas[indiceTecla][0] != Colors.yellow) {
-                                teclas[indiceTecla][0] = Colors.grey[700];
-                                teclas[indiceTecla][1] = Colors.white;
-                              }
+                              indiceLetra++;
                             }
-
-                            indiceLetra++;
                           }
-                        }
 
-                        if (palabraImpresa == palabra) {
-                          winner = "HAS GANADO";
+                          cursorCuadricula++;
+                          inicioFila = cursorCuadricula;
+
+                          if (palabraImpresa == palabra) {
+                            winner = Text("HAS GANADO", style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold));
+                            finPartida = true;
+
+                          } else if (palabraImpresa != palabra && cursorCuadricula == cuadricula.length) {
+                            winner = Text("HAS PERDIDO", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold));
+                            finPartida = true;
+                          }
                         }
                       });
                     },
@@ -218,7 +231,7 @@ class _TestLayoutState extends State<TestLayout> {
                     ),
                     child: Center(
                       child: Text(
-                        listaTemp[index][2],
+                        listaTemp[index][2] + inicioFila.toString(),
                         style: TextStyle(
                           color: listaTemp[index][1],
                           fontWeight: FontWeight.bold,
@@ -238,10 +251,14 @@ class _TestLayoutState extends State<TestLayout> {
                   child: ElevatedButton(
                     onPressed: () {
                       setState(() {
-                        if (cuadricula[cursorCuadricula][2] != "") {
-                          cuadricula[cursorCuadricula][2] = "";
-                          if (cursorCuadricula > 0) {
-                            cursorCuadricula = cursorCuadricula - 1;
+                        if (!finPartida) {
+                          if (inicioFila <= cursorCuadricula) {
+                            if (cuadricula[cursorCuadricula][2] != "") {
+                              cuadricula[cursorCuadricula][2] = "";
+                              if (cursorCuadricula > 0) {
+                                cursorCuadricula = cursorCuadricula - 1;
+                              }
+                            }
                           }
                         }
                       });
@@ -271,18 +288,23 @@ class _TestLayoutState extends State<TestLayout> {
                   child: ElevatedButton(
                     onPressed: () {
                       setState(() {
-                        for (
-                          int i = cursorCuadricula;
-                          i < cuadricula.length;
-                          i++
-                        ) {
-                          if (cuadricula[i][2] == "") {
-                            cursorCuadricula = i;
-                            break;
+                        if (!finPartida) {
+                          if ((inicioFila + 4) > cursorCuadricula) {
+                            for (
+                            int i = cursorCuadricula;
+                            i < cuadricula.length;
+                            i++
+                            ) {
+                              if (cuadricula[i][2] == "") {
+                                cursorCuadricula = i;
+                                break;
+                              }
+                            }
+
+                            cuadricula[cursorCuadricula][2] =
+                            listaTemp[index][2];
                           }
                         }
-
-                        cuadricula[cursorCuadricula][2] = listaTemp[index][2];
                       });
                     },
                     style: ElevatedButton.styleFrom(
@@ -319,14 +341,19 @@ class _TestLayoutState extends State<TestLayout> {
               child: ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    for (int i = cursorCuadricula; i < cuadricula.length; i++) {
-                      if (cuadricula[i][2] == "") {
-                        cursorCuadricula = i;
-                        break;
+                    if (!finPartida) {
+                      if ((inicioFila + 4) > cursorCuadricula) {
+                        for (int i = cursorCuadricula; i <
+                            cuadricula.length; i++) {
+                          if (cuadricula[i][2] == "") {
+                            cursorCuadricula = i;
+                            break;
+                          }
+                        }
+
+                        cuadricula[cursorCuadricula][2] = listaTemp[index][2];
                       }
                     }
-
-                    cuadricula[cursorCuadricula][2] = listaTemp[index][2];
                   });
                 },
                 style: ElevatedButton.styleFrom(
