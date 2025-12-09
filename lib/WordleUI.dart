@@ -14,7 +14,7 @@ class TestLayout extends StatefulWidget {
 
 class _TestLayoutState extends State<TestLayout> {
   List<dynamic> cuadricula = List.generate(30, (_) => [Colors.white, ""]);
-  int posCuadricula = 0;
+  int cursorCuadricula = 0;
   List<String> teclas = [
     "Q",
     "W",
@@ -154,19 +154,26 @@ class _TestLayoutState extends State<TestLayout> {
                     onPressed: () {
                       setState(() {
                         List<int> finFila = [4, 9, 14, 19, 24, 29];
-                        if (finFila.any((p) => p == posCuadricula)) {
-                          for (int i = posCuadricula - 4; i <=
-                              posCuadricula; i++) {
-                            String letra = cuadricula[posCuadricula][1];
+                        int indiceLetra = 0;
+
+                        if (finFila.any((p) => cursorCuadricula == p)) {
+                          for (int i = cursorCuadricula - 4; i <=
+                              cursorCuadricula; i++) {
+                            String letra = cuadricula[i][1];
+
                             if (palabra.contains(letra)) {
-                              if (palabra.indexOf(letra) == posCuadricula) {
-                                cuadricula[posCuadricula][0] == Colors.green;
+                              if (palabra.indexOf(letra) == indiceLetra) {
+                                cuadricula[i][0] = Colors.green;
+
                               } else {
-                                cuadricula[posCuadricula][0] == Colors.yellow;
+                                cuadricula[i][0] = Colors.yellow;
+
                               }
                             } else {
-                              cuadricula[posCuadricula][0] == Colors.grey[700];
+                              cuadricula[i][0] = Colors.grey[700];
                             }
+
+                            indiceLetra++;
                           }
                         };
                       });
@@ -177,7 +184,7 @@ class _TestLayoutState extends State<TestLayout> {
                       ),
                       backgroundColor: Colors.grey.shade300,
                     ),
-                    child: Center(child: Text(listaTemp[index] + posCuadricula.toString())),
+                    child: Center(child: Text(listaTemp[index] + cursorCuadricula.toString())),
                   ),
                 ),
               );
@@ -191,10 +198,10 @@ class _TestLayoutState extends State<TestLayout> {
                   child: ElevatedButton(
                     onPressed: () {
                       setState(() {
-                        if (cuadricula[posCuadricula][1] != "") {
-                          cuadricula[posCuadricula][1] = "";
-                          if (posCuadricula > 0) {
-                            posCuadricula = posCuadricula - 1;
+                        if (cuadricula[cursorCuadricula][1] != "") {
+                          cuadricula[cursorCuadricula][1] = "";
+                          if (cursorCuadricula > 0) {
+                            cursorCuadricula = cursorCuadricula - 1;
                           }
                         }
                       });
@@ -220,17 +227,17 @@ class _TestLayoutState extends State<TestLayout> {
                     onPressed: () {
                       setState(() {
                         for (
-                        int i = posCuadricula;
+                        int i = cursorCuadricula;
                         i < cuadricula.length;
                         i++
                         ) {
                           if (cuadricula[i][1] == "") {
-                            this.posCuadricula = i;
+                            this.cursorCuadricula = i;
                             break;
                           }
                         }
 
-                        cuadricula[this.posCuadricula][1] = listaTemp[index];
+                        cuadricula[this.cursorCuadricula][1] = listaTemp[index];
                       });
                     },
                     style: ElevatedButton.styleFrom(
@@ -260,15 +267,15 @@ class _TestLayoutState extends State<TestLayout> {
                   child: ElevatedButton(
                     onPressed: () {
                       setState(() {
-                        for (int i = posCuadricula; i <
+                        for (int i = cursorCuadricula; i <
                             cuadricula.length; i++) {
                           if (cuadricula[i][1] == "") {
-                            this.posCuadricula = i;
+                            this.cursorCuadricula = i;
                             break;
                           }
                         }
 
-                        cuadricula[this.posCuadricula][1] = listaTemp[index];
+                        cuadricula[this.cursorCuadricula][1] = listaTemp[index];
                       });
                     },
                     style: ElevatedButton.styleFrom(
