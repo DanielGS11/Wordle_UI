@@ -13,39 +13,44 @@ class TestLayout extends StatefulWidget {
 }
 
 class _TestLayoutState extends State<TestLayout> {
-  List<dynamic> cuadricula = List.generate(30, (_) => [Colors.white, ""]);
+  List<dynamic> cuadricula = List.generate(
+    30,
+    (_) => [Colors.white, Colors.black, ""],
+  );
   int cursorCuadricula = 0;
-  List<String> teclas = [
-    "Q",
-    "W",
-    "E",
-    "R",
-    "T",
-    "Y",
-    "U",
-    "I",
-    "O",
-    "P",
-    "A",
-    "S",
-    "D",
-    "F",
-    "G",
-    "H",
-    "J",
-    "K",
-    "L",
-    "Ñ",
-    "ENVIAR",
-    "Z",
-    "X",
-    "C",
-    "V",
-    "B",
-    "N",
-    "M",
-    "<-",
+  List<dynamic> teclas = [
+    [Colors.grey.shade300, Colors.black, "Q"],
+    [Colors.grey.shade300, Colors.black, "W"],
+    [Colors.grey.shade300, Colors.black, "E"],
+    [Colors.grey.shade300, Colors.black, "R"],
+    [Colors.grey.shade300, Colors.black, "T"],
+    [Colors.grey.shade300, Colors.black, "Y"],
+    [Colors.grey.shade300, Colors.black, "U"],
+    [Colors.grey.shade300, Colors.black, "I"],
+    [Colors.grey.shade300, Colors.black, "O"],
+    [Colors.grey.shade300, Colors.black, "P"],
+    [Colors.grey.shade300, Colors.black, "A"],
+    [Colors.grey.shade300, Colors.black, "S"],
+    [Colors.grey.shade300, Colors.black, "D"],
+    [Colors.grey.shade300, Colors.black, "F"],
+    [Colors.grey.shade300, Colors.black, "G"],
+    [Colors.grey.shade300, Colors.black, "H"],
+    [Colors.grey.shade300, Colors.black, "J"],
+    [Colors.grey.shade300, Colors.black, "K"],
+    [Colors.grey.shade300, Colors.black, "L"],
+    [Colors.grey.shade300, Colors.black, "Ñ"],
+    [Colors.grey.shade300, Colors.black, "ENVIAR"],
+    [Colors.grey.shade300, Colors.black, "Z"],
+    [Colors.grey.shade300, Colors.black, "X"],
+    [Colors.grey.shade300, Colors.black, "C"],
+    [Colors.grey.shade300, Colors.black, "V"],
+    [Colors.grey.shade300, Colors.black, "B"],
+    [Colors.grey.shade300, Colors.black, "N"],
+    [Colors.grey.shade300, Colors.black, "M"],
+    [Colors.grey.shade300, Colors.black, "<-"],
   ];
+
+  String winner = "";
 
   String palabra = "PASTO";
 
@@ -77,35 +82,35 @@ class _TestLayoutState extends State<TestLayout> {
 
                     children: List.generate(
                       cuadricula.length,
-                          (index) =>
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey, width: 2),
-                              color: cuadricula[index][0],
-                            ),
-                            child: Center(
-                              child: Text(
-                                cuadricula[index][1],
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 32,
-                                  //color: Colors.white,
-                                ),
-                              ),
+                      (index) => Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey, width: 2),
+                          color: cuadricula[index][0],
+                        ),
+                        child: Center(
+                          child: Text(
+                            cuadricula[index][2],
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 32,
+                              color: cuadricula[index][1],
                             ),
                           ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
 
+            Center(child: Text(winner, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green))),
+
             Expanded(
               child: Column(
                 children: [
                   Center(
                     child: SizedBox(
-                      height: 60,
                       width: 700,
                       child: _recorrerLista(0),
                     ),
@@ -113,7 +118,6 @@ class _TestLayoutState extends State<TestLayout> {
 
                   Center(
                     child: SizedBox(
-                      height: 60,
                       width: 700,
                       child: _recorrerLista(10),
                     ),
@@ -121,7 +125,6 @@ class _TestLayoutState extends State<TestLayout> {
 
                   Center(
                     child: SizedBox(
-                      height: 60,
                       width: 700,
                       child: _recorrerLista(20),
                     ),
@@ -139,11 +142,11 @@ class _TestLayoutState extends State<TestLayout> {
     Row fila = Row();
 
     if (teclas.indexOf(teclas[indice]) == 20) {
-      List<String> listaTemp = teclas.sublist(indice, teclas.length);
+      List listaTemp = teclas.sublist(indice, teclas.length);
 
       fila = Row(
         children: List.generate(9, (index) {
-          switch (listaTemp[index]) {
+          switch (listaTemp[index][2]) {
             case "ENVIAR":
               return Expanded(
                 flex: 5,
@@ -155,36 +158,73 @@ class _TestLayoutState extends State<TestLayout> {
                       setState(() {
                         List<int> finFila = [4, 9, 14, 19, 24, 29];
                         int indiceLetra = 0;
+                        String palabraImpresa = "";
 
                         if (finFila.any((p) => cursorCuadricula == p)) {
-                          for (int i = cursorCuadricula - 4; i <=
-                              cursorCuadricula; i++) {
-                            String letra = cuadricula[i][1];
+                          for (
+                            int i = cursorCuadricula - 4;
+                            i <= cursorCuadricula;
+                            i++
+                          ) {
+                            String letra = cuadricula[i][2];
+                            palabraImpresa = palabraImpresa + letra;
+                            int indiceTecla = teclas.indexWhere(
+                              (tecla) => tecla[2] == letra,
+                            );
 
                             if (palabra.contains(letra)) {
                               if (palabra.indexOf(letra) == indiceLetra) {
                                 cuadricula[i][0] = Colors.green;
+                                cuadricula[i][1] = Colors.white;
+
+                                teclas[indiceTecla][0] = Colors.green;
+                                teclas[indiceTecla][1] = Colors.white;
 
                               } else {
                                 cuadricula[i][0] = Colors.yellow;
+                                cuadricula[i][1] = Colors.white;
 
+                                if (teclas[indiceTecla][0] != Colors.green) {
+                                  teclas[indiceTecla][0] = Colors.yellow;
+                                  teclas[indiceTecla][1] = Colors.white;
+                                }
                               }
                             } else {
                               cuadricula[i][0] = Colors.grey[700];
+                              cuadricula[i][1] = Colors.white;
+
+                              if (teclas[indiceTecla][0] != Colors.green &&
+                                  teclas[indiceTecla][0] != Colors.yellow) {
+                                teclas[indiceTecla][0] = Colors.grey[700];
+                                teclas[indiceTecla][1] = Colors.white;
+                              }
                             }
 
                             indiceLetra++;
                           }
-                        };
+                        }
+
+                        if (palabraImpresa == palabra) {
+                          winner = "HAS GANADO";
+                        }
                       });
                     },
+
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(3),
                       ),
-                      backgroundColor: Colors.grey.shade300,
+                      backgroundColor: listaTemp[index][0],
                     ),
-                    child: Center(child: Text(listaTemp[index] + cursorCuadricula.toString())),
+                    child: Center(
+                      child: Text(
+                        listaTemp[index][2],
+                        style: TextStyle(
+                          color: listaTemp[index][1],
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               );
@@ -198,8 +238,8 @@ class _TestLayoutState extends State<TestLayout> {
                   child: ElevatedButton(
                     onPressed: () {
                       setState(() {
-                        if (cuadricula[cursorCuadricula][1] != "") {
-                          cuadricula[cursorCuadricula][1] = "";
+                        if (cuadricula[cursorCuadricula][2] != "") {
+                          cuadricula[cursorCuadricula][2] = "";
                           if (cursorCuadricula > 0) {
                             cursorCuadricula = cursorCuadricula - 1;
                           }
@@ -210,9 +250,14 @@ class _TestLayoutState extends State<TestLayout> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(3),
                       ),
-                      backgroundColor: Colors.grey.shade300,
+                      backgroundColor: listaTemp[index][0],
                     ),
-                    child: Center(child: Icon(Icons.backspace_outlined)),
+                    child: Center(
+                      child: Icon(
+                        Icons.backspace_outlined,
+                        color: listaTemp[index][1],
+                      ),
+                    ),
                   ),
                 ),
               );
@@ -227,26 +272,34 @@ class _TestLayoutState extends State<TestLayout> {
                     onPressed: () {
                       setState(() {
                         for (
-                        int i = cursorCuadricula;
-                        i < cuadricula.length;
-                        i++
+                          int i = cursorCuadricula;
+                          i < cuadricula.length;
+                          i++
                         ) {
-                          if (cuadricula[i][1] == "") {
-                            this.cursorCuadricula = i;
+                          if (cuadricula[i][2] == "") {
+                            cursorCuadricula = i;
                             break;
                           }
                         }
 
-                        cuadricula[this.cursorCuadricula][1] = listaTemp[index];
+                        cuadricula[cursorCuadricula][2] = listaTemp[index][2];
                       });
                     },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(3),
                       ),
-                      backgroundColor: Colors.grey.shade300,
+                      backgroundColor: listaTemp[index][0],
                     ),
-                    child: Center(child: Text(listaTemp[index])),
+                    child: Center(
+                      child: Text(
+                        listaTemp[index][2],
+                        style: TextStyle(
+                          color: listaTemp[index][1],
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               );
@@ -254,40 +307,46 @@ class _TestLayoutState extends State<TestLayout> {
         }),
       );
     } else {
-      List<String> listaTemp = teclas.sublist(indice, indice + 10);
+      List listaTemp = teclas.sublist(indice, indice + 10);
 
       fila = Row(
         children: List.generate(
           10,
-              (index) =>
-              Expanded(
-                child: Container(
-                  margin: EdgeInsets.fromLTRB(3, 0, 3, 10),
-                  height: 60,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        for (int i = cursorCuadricula; i <
-                            cuadricula.length; i++) {
-                          if (cuadricula[i][1] == "") {
-                            this.cursorCuadricula = i;
-                            break;
-                          }
-                        }
+          (index) => Expanded(
+            child: Container(
+              margin: EdgeInsets.fromLTRB(3, 0, 3, 10),
+              height: 60,
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    for (int i = cursorCuadricula; i < cuadricula.length; i++) {
+                      if (cuadricula[i][2] == "") {
+                        cursorCuadricula = i;
+                        break;
+                      }
+                    }
 
-                        cuadricula[this.cursorCuadricula][1] = listaTemp[index];
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(3),
-                      ),
-                      backgroundColor: Colors.grey.shade300,
+                    cuadricula[cursorCuadricula][2] = listaTemp[index][2];
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                  backgroundColor: listaTemp[index][0],
+                ),
+                child: Center(
+                  child: Text(
+                    listaTemp[index][2],
+                    style: TextStyle(
+                      color: listaTemp[index][1],
+                      fontWeight: FontWeight.bold,
                     ),
-                    child: Center(child: Text(listaTemp[index])),
                   ),
                 ),
               ),
+            ),
+          ),
         ),
       );
     }
